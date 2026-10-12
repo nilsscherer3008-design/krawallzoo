@@ -311,6 +311,15 @@ input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .dot{width:12px;height:12px;border-radius:50%;background:#5a5070;flex:none}
 .dot.on{background:#5fe36a;box-shadow:0 0 8px #5fe36a}
 .tag{font-size:.75rem;font-weight:800;color:#9fd8ff;border:1px solid #9fd8ff;border-radius:999px;padding:2px 8px}
+.accsec{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:14px;background:rgba(255,255,255,.04)}
+.accsec h3{margin:0}
+.pairshow,.qrbox{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.paircode{font-family:var(--display);font-size:2rem;color:var(--gold);letter-spacing:.08em;-webkit-user-select:text;user-select:text}
+.pairqr svg{width:200px;height:200px;background:#fff;border-radius:12px;display:block}
+.pairqr:empty{display:none}
+.confirmbox{padding:12px;border-radius:14px;border:2px solid var(--gold);background:rgba(255,207,51,.08)}
+.confirmbox p{margin:0 0 8px;font-weight:700}
+.warn{color:#ffb3c0}
 #touch .joyzone{position:absolute;left:0;bottom:0;width:46%;height:72%;pointer-events:auto;touch-action:none}
 .joybase{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);background:rgba(13,6,32,.35);display:none}
 .joyzone.on .joybase{display:block}
@@ -382,7 +391,8 @@ input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
         <div id="tab-friends" class="tabpanel" hidden><div class="panelbox">
           <p class="note" id="netState"></p>
           <div id="netBody" class="netbody" hidden>
-            <div class="mycode"><div class="mcl"><span>Dein Spielername</span><strong id="myName"></strong></div><div class="mcl"><span>Dein Freundescode</span><b id="myCode"></b></div><button class="smallbtn" id="copyCode">Kopieren</button><button class="linkbtn" id="changeName">Namen ändern</button></div>
+            <div class="mycode"><div class="mcl"><span>Dein Spielername</span><strong id="myName"></strong></div><div class="mcl"><span>Dein Freundescode</span><b id="myCode"></b></div><button class="smallbtn" id="copyCode">Kopieren</button><button class="linkbtn" id="changeName">Namen ändern</button><button class="linkbtn" id="friendQrBtn">QR-Code zeigen</button><button class="linkbtn" data-open="account">Konto &amp; Geräte</button></div>
+            <div id="friendQrBox" class="qrbox" hidden><div id="friendQr" class="pairqr"></div><p class="note">Dein Freund scannt diesen Code mit der Handykamera. Das Spiel öffnet sich bei ihm, und er kann dir sofort eine Freundschaftsanfrage schicken.</p></div>
             <h3>Freund hinzufügen</h3>
             <div class="addrow"><input id="addCode" maxlength="7" placeholder="Code, z. B. ABC-123" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Freundescode"><button class="smallbtn" id="addBtn">Hinzufügen</button></div>
             <p class="note" id="addMsg" aria-live="polite"></p>
@@ -391,10 +401,37 @@ input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
             <p class="note">Lade Freunde, die gerade online sind, in dein Team ein. Ihr steht dann zusammen in der Lobby.</p>
           </div>
         </div></div>
+        <div id="tab-account" class="tabpanel" hidden><div class="panelbox netbody">
+          <p class="note" id="accState"></p>
+          <div id="accBody" class="netbody" hidden>
+            <section id="accSecure" class="accsec">
+              <h3>Konto sichern</h3>
+              <p class="note">Gesichert kannst du dein Konto auf mehreren Geräten gleichzeitig nutzen, und dein Spielstand liegt auf dem Server.</p>
+              <div class="addrow"><button class="smallbtn" id="accGoogle">Mit Google sichern</button></div>
+              <div class="addrow"><input id="accEmail" type="email" placeholder="deine@email.de" autocomplete="email" aria-label="E-Mail-Adresse"><button class="smallbtn" id="accEmailBtn">Mit E-Mail sichern</button></div>
+            </section>
+            <section id="accAdd" class="accsec">
+              <h3>Weiteres Gerät hinzufügen</h3>
+              <p class="note">Wähle auf dem neuen Gerät „Code anzeigen“ und gib den Code hier ein. Oder scanne den QR-Code vom neuen Gerät mit diesem Handy.</p>
+              <div class="addrow"><input id="pairIn" maxlength="9" placeholder="Code, z. B. ABCD-EFGH" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kopplungscode"><button class="smallbtn" id="pairOk">Verbinden</button></div>
+            </section>
+            <section class="accsec">
+              <h3 id="accSwitchH">Ich habe schon ein Konto</h3>
+              <p class="note">So holst du dein Konto von einem anderen Gerät hierher.</p>
+              <div class="addrow"><button class="smallbtn" id="pairStart">Code anzeigen</button><button class="smallbtn" id="accGoogle2">Mit Google anmelden</button></div>
+              <div id="pairShow" class="pairshow" hidden><div class="paircode" id="pairCode"></div><div id="pairQr" class="pairqr"></div><p class="note">Gib den Code auf deinem anderen Gerät unter „Weiteres Gerät hinzufügen“ ein oder scanne den QR-Code mit dem anderen Handy. Der Code gilt 5 Minuten.</p><p class="note warn" id="pairWarn"></p></div>
+              <div class="addrow"><input id="accEmail2" type="email" placeholder="deine@email.de" autocomplete="email" aria-label="E-Mail-Adresse deines Kontos"><button class="smallbtn" id="accEmailBtn2">Anmelde-Link schicken</button></div>
+              <div id="emailConfirm" class="addrow" hidden><input id="emailConfirmIn" type="email" placeholder="E-Mail, an die der Link ging" autocomplete="email" aria-label="E-Mail bestätigen"><button class="smallbtn" id="emailConfirmBtn">Anmelden</button></div>
+            </section>
+            <div id="accConfirm" class="confirmbox" hidden><p id="accConfirmText"></p><div class="addrow"><button class="smallbtn" id="accYes">Ja, wechseln</button><button class="linkbtn" id="accNo">Abbrechen</button></div></div>
+            <p class="note" id="accMsg" aria-live="polite"></p>
+          </div>
+        </div></div>
         <div id="tab-name" class="tabpanel" hidden><div class="panelbox">
           <p class="note">Wähle einen Spielernamen. Deine Freunde sehen ihn, wenn sie dich hinzufügen. Nimm lieber einen Spitznamen als deinen echten Namen.</p>
           <div class="addrow"><input id="nameIn" maxlength="14" placeholder="z. B. IgelKing" autocomplete="off" spellcheck="false" aria-label="Spielername"><button class="smallbtn" id="nameBtn">Speichern</button></div>
           <p class="note" id="nameMsg" aria-live="polite"></p>
+          <button class="linkbtn" data-open="account">Ich habe schon ein Konto auf einem anderen Gerät</button>
         </div></div>
         <div id="tab-animals" class="tabpanel" hidden><div id="cards" class="cards"></div></div>
         <div id="tab-modes" class="tabpanel" hidden><p class="note" id="modeNote"></p><div id="modeList" class="modes"></div></div>
@@ -528,7 +565,7 @@ try{
 }catch(e){}
 if(!ANIMALS[save.pick]||!save.unlocked[save.pick])save.pick='igel';
 if(!['duel','gem','ffa','heist','ball'].includes(save.mode))save.mode='duel';
-function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
+function persist(){save.t=Date.now();try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}netSaveSoon();}
 
 /* ---------- Zeichnen: Helfer ---------- */
 function ell(c,x,y,rx,ry,rot){c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,Math.PI*2);c.fill();}
@@ -2285,10 +2322,10 @@ function renderAll(){
   netProfile();renderNet();
   if(tab==='animals')renderCards();else if(tab==='modes')renderModes();else if(tab==='boxes')renderBoxes();else if(tab==='pass')renderPass();else if(tab==='path')renderPath();
 }
-const SHEET_T={friends:'Freunde',name:'Dein Spielername',install:'Als App installieren',animals:'Deine Tiere',modes:'Spielmodus wählen',boxes:'Futterkisten',pass:'',path:'',help:'Steuerung und Tipps'};
+const SHEET_T={account:'Konto & Geräte',friends:'Freunde',name:'Dein Spielername',install:'Als App installieren',animals:'Deine Tiere',modes:'Spielmodus wählen',boxes:'Futterkisten',pass:'',path:'',help:'Steuerung und Tipps'};
 function setTab(t){
   tab=t;
-  for(const x of['animals','modes','boxes','pass','path','help','install','friends','name'])$('#tab-'+x).hidden=x!==t;
+  for(const x of['animals','modes','boxes','pass','path','help','install','friends','name','account'])$('#tab-'+x).hidden=x!==t;
   $('#sheet').hidden=t==='lobby';$('#sheetTitle').textContent=SHEET_T[t]||'';
   renderAll();
   if(t!=='lobby')$('#sheetClose').focus();
@@ -2400,8 +2437,15 @@ async function netStart(){
     await loadScript(B+'firebase-database-compat.js');
     firebase.initializeApp(FB_CFG);
     NET.db=firebase.database();
-    firebase.auth().onAuthStateChanged(u=>{if(u)netReady(u.uid).catch(netFail);});
-    if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
+    const auth=firebase.auth();
+    await new Promise(r=>{const un=auth.onAuthStateChanged(()=>{un();r();});});
+    if(auth.isSignInWithEmailLink(location.href)){
+      const em=localStorage.getItem('kz-email');
+      if(em){try{await handleEmailLink(em,localStorage.getItem('kz-email-mode')||'signin',location.href);}catch(e){NET.flash=errText(e);NET.openAccount=true;}}
+      else{NET.pendingEmailLink=location.href;try{history.replaceState(null,'',location.pathname);}catch(e){}}
+    }
+    if(!auth.currentUser)await auth.signInAnonymously();
+    auth.onAuthStateChanged(u=>{if(u)netReady(u.uid).catch(netFail);});
   }catch(e){netFail(e);}
 }
 let netInited=false;
@@ -2410,7 +2454,7 @@ async function netReady(uid){
   NET.uid=uid;
   const snap=await NET.db.ref('users/'+uid).once('value');
   NET.me=snap.val()||{};
-  if(!NET.me.name||!NET.me.code){NET.state='needname';renderNet();if(!G)setTab('name');return;}
+  if(!NET.me.name||!NET.me.code){NET.state='needname';renderNet();if(!G)setTab('name');netAfterReady();return;}
   netGo();
 }
 function profileBits(){return{animal:save.pick,lvl:save.levels[save.pick],paws:totalPaws()};}
@@ -2445,6 +2489,8 @@ function netGo(){
   netProfile(true);
   if(NET.me.party)joinParty(NET.me.party,true);
   renderNet();
+  netSyncSave();
+  netAfterReady();
 }
 function watchFriend(f){
   if(watched[f])return;watched[f]=1;
@@ -2559,6 +2605,7 @@ function renderNet(){
   const pb=$('#partyBar');
   if(pb){const ms=partyMembers();pb.hidden=ms.length===0;if(ms.length){pb.innerHTML='<span class="ptl">Dein Team'+(NET.leader===NET.uid?' (du bist Chef)':'')+'</span><span class="pml">'+ms.map(m=>'<i>'+esc(m.id===NET.uid?'Du':m.name)+'</i>').join('')+'</span><button class="linkbtn" id="leaveParty">Verlassen</button>';pb.querySelector('#leaveParty').onclick=leaveParty;}}
   const sn=$('#partyNote');if(sn)sn.hidden=partyMembers().length<2;
+  renderAccount();
   if(tab!=='friends')return;
   const stEl=$('#netState'),body=$('#netBody');
   const STATE_T={off:'',connecting:'Verbinde mit dem Krawallzoo-Server …',unavailable:'Freunde und Online-Spielen funktionieren in der App-Version auf krawallzoo.github.io. Lade dafür das App-Paket auf GitHub hoch.',needname:'Wähle zuerst einen Spielernamen.',error:'Keine Verbindung zum Server: '+NET.err,online:''};
@@ -2586,6 +2633,183 @@ $('#copyCode').addEventListener('click',()=>{const t=fmtCode(NET.me&&NET.me.code
 $('#changeName').addEventListener('click',()=>{$('#nameIn').value=NET.me&&NET.me.name||'';setTab('name');});
 $('#inviteToast').querySelector('.ok').addEventListener('click',()=>{const f=$('#inviteToast').dataset.from;if(f)acceptInvite(f);});
 $('#inviteToast').querySelector('.no').addEventListener('click',()=>{const f=$('#inviteToast').dataset.from;if(f)declineInvite(f);});
+/* ---------- Konto & Geräte: Google, E-Mail-Link, Geräte-Kopplung, QR ---------- */
+const FAKE_DOMAIN='@konto.krawallzoo.app';
+const URLP=new URLSearchParams(location.search);
+const PENDING={pair:(URLP.get('pair')||'').toUpperCase(),friend:(URLP.get('friend')||'').toUpperCase()};
+if(PENDING.pair||PENDING.friend){try{history.replaceState(null,'',location.pathname);}catch(e){}}
+function accMsg(t){const m=$('#accMsg');if(m)m.textContent=t;}
+function errText(e){
+  const c=e&&e.code||'';
+  const T={'auth/operation-not-allowed':'Diese Anmeldeart ist in Firebase noch nicht eingeschaltet.','auth/unauthorized-domain':'Deine Spiel-Adresse ist in Firebase noch nicht als erlaubte Domain eingetragen.','auth/unauthorized-continue-uri':'Deine Spiel-Adresse ist in Firebase noch nicht als erlaubte Domain eingetragen.',
+    'auth/popup-blocked':'Das Anmeldefenster wurde blockiert. Erlaube Pop-ups oder nimm die Geräte-Kopplung.','auth/popup-closed-by-user':'Anmeldung abgebrochen.','auth/cancelled-popup-request':'Anmeldung abgebrochen.',
+    'auth/operation-not-supported-in-this-environment':'Das geht in dieser App-Ansicht nicht. Öffne das Spiel im Browser oder nimm die Geräte-Kopplung.','auth/invalid-email':'Diese E-Mail-Adresse ist ungültig.',
+    'auth/requires-recent-login':'Melde dich auf diesem Gerät bitte nochmal mit Google oder E-Mail an und versuche es dann erneut.','auth/provider-already-linked':'Dein Konto ist damit schon verbunden.',
+    'auth/invalid-action-code':'Der Link ist abgelaufen oder wurde schon benutzt. Fordere einfach einen neuen an.','auth/expired-action-code':'Der Link ist abgelaufen. Fordere einfach einen neuen an.',
+    'auth/email-already-in-use':'Diese E-Mail gehört schon zu einem anderen Konto. Nutze „Auf mein Konto wechseln“.','auth/credential-already-in-use':'Das gehört schon zu einem anderen Konto. Nutze „Auf mein Konto wechseln“.',
+    'auth/network-request-failed':'Keine Internetverbindung.','auth/too-many-requests':'Zu viele Versuche. Warte kurz und probier es dann nochmal.'};
+  return T[c]||((e&&e.message)||String(e));
+}
+function randPw(){const A='abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';const r=new Uint32Array(24);crypto.getRandomValues(r);let s='';for(const x of r)s+=A[x%A.length];return s+'!9';}
+function normalizeSave(s){
+  const d={coins:100,food:0,xp:0,passClaimed:[],pathAt:[],boxes:{normal:1,big:0,mega:0},unlocked:{igel:true},levels:Object.assign({},ONE),paws:Object.assign({},ZERO),pick:'igel',mode:'duel',wins:0,t:0};
+  const n=Object.assign({},d,s||{});
+  for(const k of['boxes','unlocked','levels','paws'])n[k]=Object.assign({},d[k],(s&&s[k])||{});
+  for(const k of['passClaimed','pathAt'])n[k]=Array.isArray(n[k])?n[k].filter(x=>x!=null):(n[k]&&typeof n[k]==='object'?Object.values(n[k]):[]);
+  if(!ANIMALS[n.pick]||!n.unlocked[n.pick])n.pick='igel';
+  if(!MODES[n.mode])n.mode='duel';
+  return n;
+}
+let saveTimer=null;
+function netSaveSoon(){
+  if(NET.state!=='online')return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{NET.db.ref('saves/'+NET.uid).set(JSON.parse(JSON.stringify(save))).catch(()=>{});},2000);
+}
+async function netSyncSave(){
+  try{
+    const sv=(await NET.db.ref('saves/'+NET.uid).once('value')).val();
+    const sw=localStorage.getItem('kz-switch')==='1';localStorage.removeItem('kz-switch');
+    if(sv&&(sw||(sv.t||0)>(save.t||0))){save=normalizeSave(sv);try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}renderAll();}
+    else netSaveSoon();
+  }catch(e){}
+}
+function providers(){const u=firebase.auth().currentUser;return u?u.providerData.map(p=>p.providerId):[];}
+function accInfo(){
+  const u=firebase.auth().currentUser;if(!u)return'';
+  const ps=providers(),parts=[];
+  if(ps.includes('google.com'))parts.push('Google');
+  if(ps.includes('password'))parts.push(u.email&&!u.email.endsWith(FAKE_DOMAIN)?'E-Mail ('+u.email+')':'Geräte-Kopplung');
+  return parts.length?'Dein Konto ist gesichert mit: '+parts.join(', ')+'. Du kannst es auf mehreren Geräten gleichzeitig nutzen.':'Dein Konto gibt es bis jetzt nur auf diesem Gerät. Sichere es, damit du es auch auf anderen Geräten nutzen kannst.';
+}
+function renderAccount(){
+  if(tab!=='account')return;
+  const ok=NET.state==='online'||NET.state==='needname';
+  $('#accState').textContent=ok?accInfo():(NET.state==='unavailable'?'Konten gibt es nur in der App-Version auf krawallzoo.github.io.':'Noch keine Verbindung zum Server.');
+  $('#accBody').hidden=!ok;
+  if(!ok)return;
+  const named=!!(NET.me&&NET.me.name);
+  $('#accSecure').hidden=!named;$('#accAdd').hidden=!named;
+  $('#accSwitchH').textContent=named?'Auf ein anderes Konto wechseln':'Ich habe schon ein Konto';
+  $('#emailConfirm').hidden=!NET.pendingEmailLink;
+  if(NET.flash){accMsg(NET.flash);NET.flash='';}
+}
+let pendingSwitch=null;
+function askSwitch(text,fn){pendingSwitch=fn;$('#accConfirmText').textContent=text;$('#accConfirm').hidden=false;}
+async function doSwitch(fn){localStorage.setItem('kz-switch','1');await fn();location.reload();}
+function switchOrAsk(what,fn){
+  if(NET.me&&NET.me.name)askSwitch('Willst du auf dein anderes Konto wechseln ('+what+')? Das Konto „'+NET.me.name+'“ auf diesem Gerät wird dabei ersetzt.',()=>doSwitch(fn));
+  else doSwitch(fn).catch(e=>accMsg(errText(e)));
+}
+async function googleSecure(){
+  const prov=new firebase.auth.GoogleAuthProvider();
+  try{await firebase.auth().currentUser.linkWithPopup(prov);accMsg('Geschafft! Dein Konto ist mit Google gesichert. Auf anderen Geräten tippst du auf „Mit Google anmelden“.');renderAccount();}
+  catch(e){
+    if((e.code==='auth/credential-already-in-use'||e.code==='auth/email-already-in-use')&&e.credential){const cred=e.credential;switchOrAsk('Google',()=>{localStorage.removeItem('kz-pw');return firebase.auth().signInWithCredential(cred);});}
+    else accMsg(errText(e));
+  }
+}
+function googleSignIn(){
+  const prov=new firebase.auth.GoogleAuthProvider();
+  switchOrAsk('Google',async()=>{localStorage.removeItem('kz-pw');await firebase.auth().signInWithPopup(prov);});
+}
+async function emailSend(mode){
+  const inp=mode==='link'?$('#accEmail'):$('#accEmail2'),email=inp.value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return accMsg('Bitte gib eine gültige E-Mail-Adresse ein.');
+  try{
+    await firebase.auth().sendSignInLinkToEmail(email,{url:location.origin+location.pathname,handleCodeInApp:true});
+    localStorage.setItem('kz-email',email);localStorage.setItem('kz-email-mode',mode);
+    accMsg('Link gesendet an '+email+'. '+(mode==='link'?'Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'Öffne die E-Mail auf diesem Gerät und tippe auf den Link, dann bist du in deinem Konto.')+' Schau auch im Spam-Ordner nach.');
+  }catch(e){accMsg(errText(e));}
+}
+async function handleEmailLink(email,mode,href){
+  const auth=firebase.auth();
+  try{history.replaceState(null,'',location.pathname);}catch(e){}
+  localStorage.removeItem('kz-email');localStorage.removeItem('kz-email-mode');
+  if(mode==='link'&&auth.currentUser){
+    await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credentialWithLink(email,href));
+    NET.flash='Geschafft! Dein Konto ist jetzt mit '+email+' gesichert.';NET.openAccount=true;return;
+  }
+  localStorage.setItem('kz-switch','1');localStorage.removeItem('kz-pw');
+  await auth.signInWithEmailLink(email,href);
+  location.reload();
+}
+async function emailConfirm(){
+  const email=$('#emailConfirmIn').value.trim(),href=NET.pendingEmailLink;
+  if(!href)return;
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return accMsg('Bitte gib die E-Mail-Adresse ein, an die der Link ging.');
+  try{NET.pendingEmailLink=null;await handleEmailLink(email,'signin',href);}catch(e){accMsg(errText(e));}
+}
+let pairRef=null,pairTimer=null;
+async function pairStart(){
+  if(NET.state!=='online'&&NET.state!=='needname')return accMsg('Noch keine Verbindung zum Server.');
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(8);crypto.getRandomValues(r);let c='';for(const x of r)c+=A[x%A.length];
+  try{await NET.db.ref('pairs/'+c).set({uid:NET.uid,t:NOW()});}catch(e){return accMsg('Code konnte nicht erstellt werden: '+errText(e));}
+  $('#pairShow').hidden=false;$('#pairCode').textContent=c.slice(0,4)+'-'+c.slice(4);
+  $('#pairWarn').textContent=NET.me&&NET.me.name?'Achtung: Das Konto „'+NET.me.name+'“ auf diesem Gerät wird dabei ersetzt.':'';
+  showQr('#pairQr',location.origin+location.pathname+'?pair='+c);
+  if(pairRef)pairRef.off();clearTimeout(pairTimer);
+  pairRef=NET.db.ref('pairs/'+c+'/payload');
+  pairRef.on('value',async s=>{
+    const v=s.val();if(!v)return;
+    pairRef.off();pairRef=null;clearTimeout(pairTimer);
+    try{await NET.db.ref('pairs/'+c).remove();}catch(e){}
+    try{localStorage.setItem('kz-switch','1');localStorage.setItem('kz-pw',v.pw);await firebase.auth().signInWithEmailAndPassword(v.email,v.pw);location.reload();}
+    catch(e){localStorage.removeItem('kz-switch');accMsg(errText(e));}
+  });
+  pairTimer=setTimeout(()=>{if(pairRef){pairRef.off();pairRef=null;}NET.db.ref('pairs/'+c).remove().catch(()=>{});$('#pairShow').hidden=true;accMsg('Der Code ist abgelaufen. Erstelle einfach einen neuen.');},5*60*1000);
+}
+async function pairApprove(){
+  const code=$('#pairIn').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length!==8)return accMsg('Der Code hat 8 Zeichen, zum Beispiel ABCD-EFGH.');
+  if(!NET.me||!NET.me.name)return accMsg('Auf diesem Gerät gibt es noch kein Konto. Gib den Code auf dem Gerät ein, auf dem du schon spielst.');
+  accMsg('Verbinde …');
+  try{
+    const u=firebase.auth().currentUser;let email=u.email,pw;
+    if(!providers().includes('password')){
+      email=u.uid.toLowerCase()+FAKE_DOMAIN;pw=randPw();
+      await u.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email,pw));
+      localStorage.setItem('kz-pw',pw);
+    }else{
+      pw=localStorage.getItem('kz-pw');
+      if(!pw){pw=randPw();await u.updatePassword(pw);localStorage.setItem('kz-pw',pw);}
+    }
+    await NET.db.ref('pairs/'+code+'/payload').set({email,pw});
+    $('#pairIn').value='';accMsg('Verbunden! Das andere Gerät startet gleich neu und ist dann auch dein Konto.');renderAccount();
+  }catch(e){accMsg(/permission/i.test((e&&e.message)||'')||(e&&e.code)==='PERMISSION_DENIED'?'Diesen Code gibt es nicht oder er ist abgelaufen.':errText(e));}
+}
+let qrLoaded=null;
+async function showQr(sel,text){
+  const el=$(sel);el.innerHTML='';
+  try{
+    if(!qrLoaded)qrLoaded=loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js');
+    await qrLoaded;
+    const qr=qrcode(0,'M');qr.addData(text);qr.make();
+    el.innerHTML=qr.createSvgTag({cellSize:5,margin:3,title:'QR-Code'});
+  }catch(e){el.innerHTML='';}
+}
+function netAfterReady(){
+  if(NET.pendingEmailLink||NET.openAccount){NET.openAccount=false;if(!G)setTab('account');}
+  if(PENDING.pair){
+    const c=PENDING.pair;PENDING.pair='';
+    if(!G){setTab('account');$('#pairIn').value=c.slice(0,4)+'-'+c.slice(4);accMsg(NET.me&&NET.me.name?'Tippe auf „Verbinden“, um das neue Gerät mit deinem Konto zu verbinden.':'Auf diesem Gerät gibt es noch kein Konto. Scanne den Code mit dem Gerät, auf dem du schon spielst.');}
+  }
+  if(PENDING.friend&&NET.state==='online'){
+    const c=PENDING.friend;PENDING.friend='';
+    if(!G){setTab('friends');$('#addCode').value=c.slice(0,3)+'-'+c.slice(3);netMsg('Tippe auf „Hinzufügen“, um eine Freundschaftsanfrage zu schicken.');}
+  }
+}
+$('#accGoogle').addEventListener('click',googleSecure);
+$('#accGoogle2').addEventListener('click',googleSignIn);
+$('#accEmailBtn').addEventListener('click',()=>emailSend('link'));
+$('#accEmailBtn2').addEventListener('click',()=>emailSend('signin'));
+$('#emailConfirmBtn').addEventListener('click',emailConfirm);
+$('#pairStart').addEventListener('click',pairStart);
+$('#pairOk').addEventListener('click',pairApprove);
+$('#pairIn').addEventListener('keydown',e=>{if(e.key==='Enter')pairApprove();});
+$('#accYes').addEventListener('click',async()=>{const f=pendingSwitch;pendingSwitch=null;$('#accConfirm').hidden=true;if(f){try{await f();}catch(e){localStorage.removeItem('kz-switch');accMsg(errText(e));}}});
+$('#accNo').addEventListener('click',()=>{pendingSwitch=null;$('#accConfirm').hidden=true;});
+$('#friendQrBtn').addEventListener('click',()=>{const box=$('#friendQrBox');box.hidden=!box.hidden;if(!box.hidden&&NET.me&&NET.me.code)showQr('#friendQr',location.origin+location.pathname+'?friend='+NET.me.code);});
 /* ---------- Kisten öffnen ---------- */
 let BX=null;
 function resetBoxStage(name,col){
